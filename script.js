@@ -64,21 +64,15 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !pref
     // Animate dish cards on scroll (if on index.html)
     const cards = gsap.utils.toArray('.dish-card');
     if (cards.length > 0) {
-        cards.forEach((card, i) => {
-            gsap.fromTo(card, 
-                { y: 50, opacity: 0 }, 
-                { 
-                    y: 0, 
-                    opacity: 1, 
-                    duration: 0.8, 
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 85%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
+        ScrollTrigger.batch(cards, {
+            start: "top 85%",
+            once: true,
+            onEnter: (batch) => {
+                gsap.fromTo(batch,
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
+                );
+            }
         });
     }
 }
