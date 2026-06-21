@@ -2,9 +2,22 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const heroVideo = document.querySelector('.hero-bg-video');
-if (heroVideo && prefersReducedMotion) {
-    heroVideo.pause();
-    heroVideo.removeAttribute('autoplay');
+if (heroVideo) {
+    if (prefersReducedMotion) {
+        heroVideo.pause();
+        heroVideo.removeAttribute('autoplay');
+    } else {
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    heroVideo.play();
+                } else {
+                    heroVideo.pause();
+                }
+            });
+        }, { threshold: 0 });
+        heroObserver.observe(heroVideo);
+    }
 }
 
 // Lenis Smooth Scroll
