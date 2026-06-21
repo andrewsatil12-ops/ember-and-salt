@@ -22,11 +22,26 @@ if (typeof Lenis !== 'undefined' && !prefersReducedMotion) {
         infinite: false,
     });
 
-    function raf(time) {
-        lenis.raf(time);
+    // Sincroniza o Lenis com o ScrollTrigger — sem isso, os dois calculam
+    // posição de scroll separadamente e o resultado é engasgo no scroll.
+    if (typeof ScrollTrigger !== 'undefined') {
+        lenis.on('scroll', ScrollTrigger.update);
+    }
+
+    // Lenis passa a ser "tocado" pelo ticker do GSAP em vez de ter seu
+    // próprio loop de requestAnimationFrame separado — um relógio só pros dois.
+    if (typeof gsap !== 'undefined') {
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
         requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
 }
 
 // GSAP Animations
